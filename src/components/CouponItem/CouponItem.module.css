@@ -1,134 +1,225 @@
 .item {
+  position: relative;
   display: flex;
   align-items: stretch;
-  background: linear-gradient(135deg, #fff5f5 0%, #ffffff 60%);
+  background: #ffffff;
   border-radius: 12px;
   overflow: hidden;
   margin-bottom: 12px;
-  box-shadow: 0 2px 8px rgba(255, 77, 79, 0.08);
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  transition: box-shadow 0.2s ease;
 }
 
-.item:active {
-  transform: scale(0.98);
+.item:last-child {
+  margin-bottom: 0;
 }
 
-.claimed {
-  opacity: 0.7;
+.item.claimed {
+  opacity: 0.65;
 }
 
-.left {
-  display: flex;
-  align-items: stretch;
-  flex: 1;
-  min-width: 0;
+/* 新券高亮闪烁 */
+@keyframes flash {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(255, 77, 79, 0);
+    background-color: #ffffff;
+  }
+  25% {
+    box-shadow: 0 0 0 3px rgba(255, 77, 79, 0.5);
+    background-color: #fff5f5;
+  }
+  50% {
+    box-shadow: 0 0 0 0 rgba(255, 77, 79, 0);
+    background-color: #ffffff;
+  }
+  75% {
+    box-shadow: 0 0 0 3px rgba(255, 77, 79, 0.4);
+    background-color: #fff5f5;
+  }
 }
 
-.value {
+.flash {
+  animation: flash 0.4s ease 4;
+}
+
+/* 左侧色条 */
+.leftBar {
+  width: 4px;
+  flex-shrink: 0;
+  background: linear-gradient(180deg, #ff4d4f 0%, #ff7875 100%);
+}
+
+.discountColor .leftBar {
+  background: linear-gradient(180deg, #52c41a 0%, #95de64 100%);
+}
+
+/* 金额区域 */
+.valueSection {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 90px;
+  width: 100px;
   flex-shrink: 0;
   padding: 16px 12px;
 }
 
-.discount {
+.cashValue {
+  display: flex;
+  align-items: flex-start;
   color: #ff4d4f;
-  text-align: center;
-}
-
-.discountNum {
-  font-size: 32px;
-  font-weight: 700;
-  line-height: 1;
-}
-
-.discountUnit {
-  font-size: 14px;
-  font-weight: 600;
-  margin-left: 2px;
-}
-
-.cash {
-  color: #ff4d4f;
-  text-align: center;
 }
 
 .cashUnit {
   font-size: 16px;
   font-weight: 600;
-  vertical-align: top;
-  margin-right: 2px;
+  margin-top: 4px;
 }
 
 .cashNum {
-  font-size: 32px;
+  font-size: 36px;
   font-weight: 700;
   line-height: 1;
 }
 
+.discountValue {
+  display: flex;
+  align-items: baseline;
+  color: #ff4d4f;
+}
+
+.discountColor .discountValue {
+  color: #52c41a;
+}
+
+.discountColor .cashValue {
+  color: #52c41a;
+}
+
+.discountNum {
+  font-size: 36px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.discountUnit {
+  font-size: 16px;
+  font-weight: 600;
+  margin-left: 2px;
+}
+
+/* 虚线分割 */
 .divider {
   width: 1px;
+  flex-shrink: 0;
   background: repeating-linear-gradient(
     to bottom,
-    #e0e0e0 0,
-    #e0e0e0 4px,
+    #e8e8e8 0,
+    #e8e8e8 4px,
     transparent 4px,
     transparent 8px
   );
-  margin: 12px 0;
+  margin: 14px 0;
 }
 
-.info {
+/* 信息区域 */
+.infoSection {
   flex: 1;
   min-width: 0;
   padding: 12px 16px 12px 12px;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  gap: 4px;
+}
+
+.titleRow {
+  display: flex;
+  align-items: center;
 }
 
 .title {
   font-size: 15px;
   font-weight: 600;
-  color: #222;
-  margin-bottom: 4px;
+  color: #262626;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.tagRow {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 2px;
+}
+
+.tag {
+  display: inline-block;
+  padding: 1px 6px;
+  font-size: 11px;
+  color: #ff4d4f;
+  background-color: #fff1f0;
+  border-radius: 4px;
+  line-height: 1.4;
+}
+
+.metaRow {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 2px;
 }
 
 .condition {
   font-size: 12px;
-  color: #666;
-  margin-bottom: 2px;
+  color: #595959;
+}
+
+.dot {
+  font-size: 12px;
+  color: #bfbfbf;
+}
+
+.rule {
+  font-size: 12px;
+  color: #8c8c8c;
+}
+
+.expireRow {
+  margin-top: 2px;
 }
 
 .expire {
   font-size: 11px;
-  color: #999;
+  color: #bfbfbf;
 }
 
-.right {
+/* 操作区域 */
+.actionSection {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 12px 16px;
-  background-color: #ffffff;
-  border-left: 1px dashed #e0e0e0;
+  padding: 0 16px;
+  border-left: 1px dashed #e8e8e8;
 }
 
 .claimBtn {
-  padding: 8px 16px;
+  padding: 8px 18px;
   background: linear-gradient(135deg, #ff4d4f 0%, #ff7875 100%);
   color: #ffffff;
   font-size: 13px;
   font-weight: 600;
   border-radius: 20px;
-  transition: transform 0.15s ease, opacity 0.15s ease;
-  box-shadow: 0 2px 6px rgba(255, 77, 79, 0.3);
+  white-space: nowrap;
+  line-height: 1;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+  box-shadow: 0 2px 6px rgba(255, 77, 79, 0.25);
 }
 
 .claimBtn:active {
   transform: scale(0.95);
+  box-shadow: 0 1px 3px rgba(255, 77, 79, 0.2);
 }
 
 .claimBtn:disabled {
@@ -136,6 +227,11 @@
 }
 
 .claimedBtn {
-  background: linear-gradient(135deg, #ccc 0%, #ddd 100%);
+  background: linear-gradient(135deg, #d9d9d9 0%, #e8e8e8 100%);
   box-shadow: none;
+}
+
+.discountColor .claimBtn {
+  background: linear-gradient(135deg, #52c41a 0%, #73d13d 100%);
+  box-shadow: 0 2px 6px rgba(82, 196, 26, 0.25);
 }

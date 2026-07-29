@@ -1,62 +1,112 @@
-import { useState, useCallback } from 'react';
+import { memo, useEffect, useRef } from 'react';
 import styles from './RedPacketParticle.module.css';
 
-interface Particle {
-  id: number;
-  x: number;
-  y: number;
-  dx: number;
-  dy: number;
+export interface RedPacketParticleProps {
+  fromX: number;
+  fromY: number;
+  toX: number;
+  toY: number;
+  duration: number;
+  delay?: number;
+  onComplete?: () => void;
+  /** 容器选择器, 用于获取相对坐标 */
+  containerSelector?: string;
 }
 
-let particleId = 0;
+/**
+ * 红包粒子 - 抛物线飞向目标
+ * 使用 Web Animations API 与 rAF 结合, 保证多端兼容性
+ */
+const RedPacketParticle = ({
+  fromX,
+  fromY,
+  toX,
+  toY,
+  duration,
+  delay = 0,
+  onComplete,
+}: RedPacketParticleProps) => {
+  const elRef = useRef<HTMLDivElement>(null);
+  const rafRef = useRef<number>();
+  const startTimeRef = useRef<number>();
 
-const RedPacketParticle = () => {
-  const [particles, setParticles] = useState<Particle[]>([]);
+  useEffect(() => {
+    const el = elRef.current;
+    if (!el) return;
 
-  const createParticles = useCallback((e: React.MouseEvent) => {
-    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
-    const startX = e.clientX - rect.left;
-    const startY = e.clientY - rect.top;
+    // 初始位置 (屏幕坐标)
+    el.style.left = `${fromX}px`;
+    el.style.top = `${fromY}px`;
+    el.style.opacity = '1';
+    el.style.transform = 'translate(-50%, -50%) scale(1)';
 
-    const newParticles: Particle[] = [];
-    for (let i = 0; i < 6; i++) {
-      particleId++;
-      const angle = (Math.PI * 2 * i) / 6;
-      newParticles.push({
-        id: particleId,
-        x: startX,
-        y: startY,
-        dx: Math.cos(angle) * (50 + Math.random() * 30),
-        dy: Math.sin(angle) * (50 + Math.random() * 30),
-      });
+    const start = performance.now();
+    startTimeRef.current = start;
+    let lastTriggered = false;
+
+    const animate = (now: number) => {
+      const elapsed = now - start - delay;
+      if (elapsed < 0) {
+        rafRef.current = requestAnimationFrame(animate);
+        return;
+      }
+      const t = Math.min(elapsed / duration, 1);
+
+      // 二次贝塞尔曲线, 控制点在起点与终点中间偏上
+      const midX = (fromX + toX) / 2;
+      const midY = Math.min(fromY, toY) - 80; // 往上飘起
+
+      // 抛物线公式: B(t) = (1-t)^2 * P0 + 2(1-t)t * P1 + t^2 * P2
+      const x = (1 - t) ** 2 * fromX + 2 * (1 - t) * t * midX + t * t * toX;
+      const y = (1 - t) ** 2 * fromY + 2 * (1 - t) * t * midY + t * t * toY;
+
+      // 旋转角度, 指向目标方向
+      const angle = Math.atan2(toY - fromY, toX - fromX) * (180 / Math.PI);
+
+      el.style.left = `${x}px`;
+      el.style.top = `${y}px`;
+      el.style.transform = `translate(-50%, -50%) scale(${t < 0.15 ? 1 + t * 3 : 1.4 - t * 0.4}) rotate(${angle * (1 - t) * 0.2}deg)`;
+      el.style.opacity = `${t > 0.85 ? 1 - (t - 0.85) / 0.15 : 1}`;
+
+      if (t < 1) {
+        rafRef.current = requestAnimationFrame(animate);
+      } else {
+        if (!lastTriggered) {
+          lastTriggered = true;
+          onComplete?.();
+        }
+      }
+    };
+
+    // 初始延迟
+    if (delay > 0) {
+      const delayTimer = setTimeout(() => {
+        rafRef.current = requestAnimationFrame(animate);
+      }, delay);
+      return () => {
+        clearTimeout(delayTimer);
+        if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      };
+    } else {
+      rafRef.current = requestAnimationFrame(animate);
+      return () => {
+        if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      };
     }
-
-    setParticles((prev) => [...prev, ...newParticles]);
-
-    setTimeout(() => {
-      setParticles((prev) => prev.filter((p) => !newParticles.some((np) => np.id === p.id)));
-    }, 800);
-  }, []);
+  }, [fromX, fromY, toX, toY, duration, delay, onComplete]);
 
   return (
-    <div className={styles.container} onClick={createParticles}>
-      {particles.map((p) => (
-        <span
-          key={p.id}
-          className={styles.particle}
-          style={{
-            '--dx': `${p.dx}px`,
-            '--dy': `${p.dy}px`,
-            left: `${p.x}px`,
-            top: `${p.y}px`,
-          } as React.CSSProperties}
-        >
-          💰
-        </span>
-      ))}
+    <div
+      ref={elRef}
+      className={styles.particle}
+      style={{ left: fromX, top: fromY }}
+    >
+      <div className={styles.packet}>
+        <span className={styles.yuan}>¥</span>
+      </div>
+      <div className={styles.glow} />
     </div>
   );
 };
 
-export default RedPacketParticle;
+export default memo(RedPacketParticle);

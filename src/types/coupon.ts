@@ -1,19 +1,30 @@
-/**
- * 优惠券数据结构
- */
+export type CouponType = 'cash' | 'discount';
+
 export interface Coupon {
-  /** 唯一标识 */
   id: number;
-  /** 优惠券标题 */
+  type: CouponType;
   title: string;
-  /** 优惠金额/折扣 */
+  /** 金额或折扣值 */
   value: string;
-  /** 使用条件 */
+  /** 单位: 元 / 折 */
+  unit?: string;
   condition: string;
-  /** 有效期 */
   expireAt: string;
-  /** 是否已领取 */
   claimed: boolean;
-  /** 优惠券类型: 满减/折扣/新用户 */
-  type: 'discount' | 'cash' | 'new';
+  /** 标签, 例如 ["限时", "新客"] */
+  tags?: string[];
+  /** 是否为新领取的(高亮闪烁) */
+  isNew?: boolean;
+  /** 规则说明 */
+  ruleText?: string;
+}
+
+export interface ParticleState {
+  id: number;
+  fromX: number;
+  fromY: number;
+  toX: number;
+  toY: number;
+  startTime: number;
+  duration: number;
 }

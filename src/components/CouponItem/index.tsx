@@ -1,51 +1,98 @@
-import { memo } from 'react';
+import { memo, useEffect, useRef, useCallback } from 'react';
 import type { Coupon } from '../../types/coupon';
 import styles from './CouponItem.module.css';
 
 export interface CouponItemProps {
   coupon: Coupon;
-  onClaim: (id: number) => void;
+  onClaim: (id: number, rect: DOMRect) => void;
 }
 
 const CouponItem = ({ coupon, onClaim }: CouponItemProps) => {
-  const { id, title, value, condition, expireAt, claimed, type } = coupon;
+  const btnRef = useRef<HTMLButtonElement>(null);
+  const itemRef = useRef<HTMLDivElement>(null);
 
-  const handleClaim = () => {
-    if (!claimed) {
-      onClaim(id);
+  // 新券高亮闪烁
+  useEffect(() => {
+    if (coupon.isNew && itemRef.current) {
+      itemRef.current.classList.add(styles.flash);
+      const t = setTimeout(() => {
+        itemRef.current?.classList.remove(styles.flash);
+      }, 1600);
+      return () => clearTimeout(t);
     }
-  };
+  }, [coupon.isNew]);
+
+  const handleClaim = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation();
+      if (coupon.claimed) return;
+      const rect = btnRef.current?.getBoundingClientRect();
+      if (!rect) return;
+      onClaim(coupon.id, rect);
+    },
+    [coupon.id, coupon.claimed, onClaim],
+  );
+
+  const isDiscount = coupon.type === 'discount';
+  const colorClass = isDiscount ? styles.discountColor : styles.cashColor;
 
   return (
-    <div className={`${styles.item} ${claimed ? styles.claimed : ''}`}>
-      <div className={styles.left}>
-        <div className={styles.value}>
-          {type === 'discount' ? (
-            <span className={styles.discount}>
-              <span className={styles.discountNum}>{value}</span>
-              <span className={styles.discountUnit}>折</span>
+    <div
+      ref={itemRef}
+      className={`${styles.item} ${coupon.claimed ? styles.claimed : ''} ${colorClass}`}
+      data-coupon-id={coupon.id}
+    >
+      <div className={styles.leftBar} />
+
+      <div className={styles.valueSection}>
+        {isDiscount ? (
+          <div className={styles.discountValue}>
+            <span className={styles.discountNum}>{coupon.value}</span>
+            <span className={styles.discountUnit}>折</span>
+          </div>
+        ) : (
+          <div className={styles.cashValue}>
+            <span className={styles.cashUnit}>¥</span>
+            <span className={styles.cashNum}>{coupon.value}</span>
+          </div>
+        )}
+      </div>
+
+      <div className={styles.divider} />
+
+      <div className={styles.infoSection}>
+        <div className={styles.titleRow}>
+          <span className={styles.title}>{coupon.title}</span>
+        </div>
+        <div className={styles.tagRow}>
+          {coupon.tags?.map((tag) => (
+            <span key={tag} className={styles.tag}>
+              {tag}
             </span>
-          ) : (
-            <span className={styles.cash}>
-              <span className={styles.cashUnit}>¥</span>
-              <span className={styles.cashNum}>{value}</span>
-            </span>
+          ))}
+        </div>
+        <div className={styles.metaRow}>
+          <span className={styles.condition}>{coupon.condition}</span>
+          {coupon.ruleText && (
+            <>
+              <span className={styles.dot}>·</span>
+              <span className={styles.rule}>{coupon.ruleText}</span>
+            </>
           )}
         </div>
-        <div className={styles.divider} />
-        <div className={styles.info}>
-          <div className={styles.title}>{title}</div>
-          <div className={styles.condition}>{condition}</div>
-          <div className={styles.expire}>有效期至 {expireAt}</div>
+        <div className={styles.expireRow}>
+          <span className={styles.expire}>有效期至 {coupon.expireAt}</span>
         </div>
       </div>
-      <div className={styles.right}>
+
+      <div className={styles.actionSection}>
         <button
-          className={`${styles.claimBtn} ${claimed ? styles.claimedBtn : ''}`}
+          ref={btnRef}
+          className={`${styles.claimBtn} ${coupon.claimed ? styles.claimedBtn : ''}`}
           onClick={handleClaim}
-          disabled={claimed}
+          disabled={coupon.claimed}
         >
-          {claimed ? '已领取' : '立即领取'}
+          {coupon.claimed ? '已领取' : '立即领取'}
         </button>
       </div>
     </div>

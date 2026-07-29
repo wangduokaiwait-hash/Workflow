@@ -1,29 +1,58 @@
-.container {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  overflow: visible;
-}
-
 .particle {
-  position: absolute;
-  font-size: 16px;
+  position: fixed;
+  width: 40px;
+  height: 40px;
+  z-index: 2000;
   pointer-events: none;
-  animation: float 0.8s ease-out forwards;
-  transform: translate(-50%, -50%);
+  will-change: left, top, transform, opacity;
 }
 
-@keyframes float {
-  0% {
-    transform: translate(-50%, -50%) scale(0);
-    opacity: 1;
-  }
-  20% {
-    transform: translate(calc(-50% + var(--dx) * 0.2), calc(-50% + var(--dy) * 0.2)) scale(1.2);
-    opacity: 1;
-  }
-  100% {
-    transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(0.5);
-    opacity: 0;
-  }
+.packet {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #ff4d4f 0%, #ff7875 100%);
+  border-radius: 50%;
+  box-shadow:
+    0 4px 12px rgba(255, 77, 79, 0.5),
+    0 0 0 2px rgba(255, 255, 255, 0.2);
+}
+
+.packet::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ffd666 0%, #ffc53d 100%);
+  z-index: -1;
+}
+
+.yuan {
+  color: #ffffff;
+  font-size: 18px;
+  font-weight: 700;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 60px;
+  height: 60px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(255, 77, 79, 0.3) 0%,
+    rgba(255, 77, 79, 0.1) 40%,
+    transparent 70%
+  );
+  pointer-events: none;
 }

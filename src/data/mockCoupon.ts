@@ -1,43 +1,51 @@
 import type { Coupon } from '../types/coupon';
 
-/**
- * 示例优惠券数据
- */
 export const mockCoupons: Coupon[] = [
   {
     id: 1,
-    title: '满50减10元',
+    type: 'cash',
+    title: '满50减10元优惠券',
     value: '10',
+    unit: '元',
     condition: '满50元可用',
     expireAt: '2026-12-31',
     claimed: false,
-    type: 'cash',
+    tags: ['限时', '热门'],
+    ruleText: '全场商品可用',
   },
   {
     id: 2,
+    type: 'discount',
     title: '8折优惠券',
     value: '8',
+    unit: '折',
     condition: '全场商品',
     expireAt: '2026-08-15',
     claimed: false,
-    type: 'discount',
+    tags: ['新客'],
+    ruleText: '无门槛使用',
   },
   {
     id: 3,
-    title: '新用户专享',
+    type: 'cash',
+    title: '新用户专享券',
     value: '20',
+    unit: '元',
     condition: '首次下单立减',
     expireAt: '2026-09-01',
     claimed: true,
-    type: 'new',
+    tags: ['新客'],
   },
   {
     id: 4,
-    title: '满100减25元',
+    type: 'cash',
+    title: '满100减25元优惠券',
     value: '25',
+    unit: '元',
     condition: '满100元可用',
     expireAt: '2026-10-31',
     claimed: false,
-    type: 'cash',
+    tags: ['会员专享'],
+    ruleText: '指定商品可用',
   },
 ];
