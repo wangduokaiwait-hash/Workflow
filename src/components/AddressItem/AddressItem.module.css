@@ -1,0 +1,98 @@
+.item {
+  display: flex;
+  align-items: flex-start;
+  background-color: #ffffff;
+  padding: 16px;
+  border-bottom: 1px solid #f2f2f2;
+  transition: background-color 0.15s ease;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.item:active {
+  background-color: #fafafa;
+}
+
+.item.checked {
+  background-color: #fff5f5;
+}
+
+.radioWrap {
+  flex-shrink: 0;
+  padding-top: 2px;
+  margin-right: 12px;
+}
+
+.content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 第一行: 左侧内容 + 右侧编辑按钮 */
+.firstRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.firstRowLeft {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: flex-start;
+  overflow: hidden;
+}
+
+.tags {
+  display: inline-flex;
+  flex-wrap: nowrap;
+  flex-shrink: 0;
+  align-items: center;
+}
+
+.addressWrap {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.address {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: #222222;
+  line-height: 1.45;
+  word-break: break-all;
+  /* 单行/两行/三行, 超出后省略 */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.editWrap {
+  flex-shrink: 0;
+  align-self: flex-start;
+  margin-left: 4px;
+}
+
+/* 第二行: 姓名 + 手机号 */
+.secondRow {
+  margin-top: 6px;
+  font-size: 13px;
+  color: #999999;
+  line-height: 1.4;
+}
+
+.name {
+  display: inline-block;
+}
+
+.phone {
+  display: inline-block;
+  margin-left: 10px;
+}

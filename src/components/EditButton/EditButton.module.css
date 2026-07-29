@@ -1,0 +1,21 @@
+.editBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  min-height: 28px;
+  padding: 0;
+  border-radius: 4px;
+  flex-shrink: 0;
+  transition: background-color 0.15s ease;
+}
+
+.editBtn:active {
+  background-color: rgba(255, 77, 79, 0.08);
+}
+
+.icon {
+  display: block;
+}

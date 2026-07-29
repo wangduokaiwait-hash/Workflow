@@ -1,0 +1,195 @@
+<view class="page">
+  <!-- 顶部标题栏 -->
+  <view class="header">
+    <text class="header-title">收货地址</text>
+  </view>
+
+  <!-- 主内容区 -->
+  <view class="main">
+    <!-- 地址列表 -->
+    <view class="address-list">
+      <view
+        wx:for="{{addresses}}"
+        wx:key="id"
+        class="address-item {{item.checked ? 'address-item-checked' : ''}}"
+        data-id="{{item.id}}"
+        bindtap="onSelectAddress"
+      >
+        <!-- 左侧 Radio -->
+        <view class="radio-wrap">
+          <view class="radio {{item.checked ? 'radio-checked' : ''}}">
+            <view wx:if="{{item.checked}}" class="radio-dot"></view>
+          </view>
+        </view>
+
+        <!-- 右侧内容 -->
+        <view class="address-content">
+          <!-- 第一行：标签 + 地址 + 状态 + 编辑 -->
+          <view class="address-first-row">
+            <view class="address-first-left">
+              <view class="tags" wx:if="{{item.tags.length > 0}}">
+                <text wx:for="{{item.tags}}" wx:for-item="tag" wx:key="*this" class="tag">{{tag}}</text>
+              </view>
+              <view class="address-text-wrap">
+                <text class="address-text">{{item.address}}</text>
+              </view>
+              <text wx:if="{{item.stopText}}" class="stop-badge">{{item.stopText}}</text>
+            </view>
+            <view class="edit-wrap" catchtap="onEditAddress" data-id="{{item.id}}">
+              <text class="edit-icon">✎</text>
+            </view>
+          </view>
+
+          <!-- 第二行：姓名 + 手机号 -->
+          <view class="address-second-row">
+            <text class="name">{{item.name}}</text>
+            <text class="phone">{{item.phone}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 优惠券入口 -->
+    <view class="coupon-entry">
+      <button class="coupon-btn" bindtap="openCouponModal">
+        <text class="coupon-btn-icon">🎫</text>
+        <text class="coupon-btn-text">查看优惠券</text>
+        <text class="coupon-btn-arrow">›</text>
+      </button>
+    </view>
+  </view>
+
+  <!-- ===== 优惠券浮层 ===== -->
+  <view class="coupon-overlay {{couponVisible ? 'coupon-overlay-visible' : ''}}" bindtap="closeCouponModal">
+    <view
+      class="coupon-sheet {{couponVisible ? 'coupon-sheet-visible' : ''}}"
+      catchtap="stopPropagation"
+      bindtouchstart="onTouchStart"
+      bindtouchmove="onTouchMove"
+      bindtouchend="onTouchEnd"
+      style="transform: translateY({{sheetTranslateY}}px); transition: {{isSheetMoving ? 'none' : 'transform 0.3s ease-out'}};"
+    >
+      <!-- 拖动条 -->
+      <view class="handle-bar">
+        <view class="handle"></view>
+      </view>
+
+      <!-- 头部 -->
+      <view class="coupon-header">
+        <text class="coupon-title">优惠券</text>
+        <view class="close-btn" bindtap="closeCouponModal">
+          <text class="close-icon">✕</text>
+        </view>
+      </view>
+
+      <!-- 优惠券列表 -->
+      <scroll-view class="coupon-list" scroll-y enhanced show-scrollbar="{{false}}">
+        <view
+          wx:for="{{coupons}}"
+          wx:key="id"
+          id="coupon-item-{{item.id}}"
+          class="coupon-card {{item.isNew || newCouponIds.includes(item.id) ? 'coupon-card-new' : ''}}"
+        >
+          <!-- 普通券 -->
+          <view wx:if="{{item.type === 'normal'}}" class="normal-coupon">
+            <view class="coupon-left">
+              <view class="coupon-price-wrap">
+                <text class="coupon-price">{{item.price}}</text>
+                <text class="coupon-price-tag">优惠券</text>
+              </view>
+              <view class="coupon-info">
+                <text class="coupon-name">{{item.title}}</text>
+                <text class="coupon-valid">{{item.validPeriod}}</text>
+                <text wx:if="{{item.ruleText}}" class="coupon-rule">{{item.ruleText}}</text>
+              </view>
+            </view>
+            <view class="coupon-right">
+              <button class="claim-btn" data-id="{{item.id}}" catchtap="onClaimCoupon">立即领券</button>
+            </view>
+          </view>
+
+          <!-- 券包 -->
+          <view wx:if="{{item.type === 'package'}}" class="package-coupon">
+            <view class="package-left">
+              <view class="package-icon-wrap">
+                <view class="package-icon">
+                  <text class="package-icon-text">券</text>
+                </view>
+                <text wx:if="{{item.packageDesc}}" class="package-desc">{{item.packageDesc}}</text>
+              </view>
+              <view class="package-tags">
+                <text wx:for="{{item.tags}}" wx:for-item="tag" wx:key="*this" class="package-tag">{{tag}}</text>
+              </view>
+            </view>
+            <button class="claim-btn package-claim-btn" data-id="{{item.id}}" catchtap="onClaimCoupon">立即领取</button>
+          </view>
+
+          <!-- APP专享券 -->
+          <view wx:if="{{item.type === 'appExclusive'}}" class="app-coupon">
+            <view class="coupon-left">
+              <view class="coupon-price-wrap app-price-wrap">
+                <text class="coupon-price app-price">{{item.price}}</text>
+                <text class="coupon-price-tag app-price-tag">优惠券</text>
+              </view>
+              <view class="coupon-info">
+                <text class="coupon-name">{{item.title}}</text>
+                <text wx:if="{{item.subtitle}}" class="coupon-subtitle">{{item.subtitle}}</text>
+                <view class="coupon-tags-row">
+                  <text wx:for="{{item.tags}}" wx:for-item="tag" wx:key="*this" class="app-tag">{{tag}}</text>
+                </view>
+                <text class="coupon-valid">{{item.validPeriod}}</text>
+              </view>
+            </view>
+            <view class="coupon-right">
+              <button class="claim-btn app-claim-btn" data-id="{{item.id}}" catchtap="onClaimCoupon">立即领券</button>
+              <text wx:if="{{item.ruleText}}" class="coupon-rule">{{item.ruleText}}</text>
+            </view>
+          </view>
+
+          <!-- 会员专享券 -->
+          <view wx:if="{{item.type === 'memberExclusive'}}" class="member-coupon">
+            <view class="coupon-left">
+              <view class="coupon-price-wrap member-price-wrap">
+                <text class="coupon-price member-price">{{item.price}}</text>
+                <text class="coupon-price-tag member-price-tag">优惠券</text>
+              </view>
+              <view class="coupon-info">
+                <text class="coupon-name">{{item.title}}</text>
+                <view class="coupon-tags-row">
+                  <text wx:for="{{item.tags}}" wx:for-item="tag" wx:key="*this" class="member-tag">{{tag}}</text>
+                </view>
+                <text class="coupon-valid">{{item.validPeriod}}</text>
+              </view>
+            </view>
+            <view class="coupon-right">
+              <button class="claim-btn member-claim-btn" data-id="{{item.id}}" catchtap="onClaimCoupon">立即领券</button>
+              <text wx:if="{{item.ruleText}}" class="coupon-rule">{{item.ruleText}}</text>
+            </view>
+          </view>
+        </view>
+
+        <!-- 空状态 -->
+        <view wx:if="{{coupons.length === 0}}" class="empty-state">
+          <text class="empty-text">暂无优惠券</text>
+        </view>
+      </scroll-view>
+
+      <!-- 安全区域 -->
+      <view class="safe-area"></view>
+    </view>
+  </view>
+
+  <!-- ===== 红包飞行动画粒子 ===== -->
+  <view wx:if="{{particles.length > 0}}" class="particle-container">
+    <view
+      wx:for="{{particles}}"
+      wx:key="id"
+      class="red-packet"
+      style="left: {{item.left}}px; top: {{item.top}}px; transform: {{item.transform}}; opacity: {{item.opacity}};"
+    >
+      <view class="red-packet-body">
+        <text class="red-packet-icon">¥</text>
+      </view>
+    </view>
+  </view>
+</view>
