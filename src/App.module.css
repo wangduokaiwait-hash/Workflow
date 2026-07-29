@@ -27,46 +27,6 @@
 .main {
   flex: 1;
   width: 100%;
-  max-width: 750px; /* 移动端常见最大宽度, 保证在大屏 PC 预览时也不至于过宽 */
+  max-width: 750px;
   margin: 0 auto;
-}
-
-/* ========== 优惠券入口 ========== */
-.couponEntry {
-  padding: 16px;
-  margin-top: 12px;
-}
-
-.couponBtn {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  padding: 14px 16px;
-  background: linear-gradient(135deg, #ff4d4f 0%, #ff7875 100%);
-  border-radius: 12px;
-  color: #ffffff;
-  font-size: 15px;
-  font-weight: 600;
-  transition: transform 0.15s ease, opacity 0.15s ease;
-  box-shadow: 0 2px 12px rgba(255, 77, 79, 0.3);
-}
-
-.couponBtn:active {
-  transform: scale(0.98);
-  opacity: 0.95;
-}
-
-.couponBtnIcon {
-  font-size: 20px;
-  margin-right: 8px;
-}
-
-.couponBtnText {
-  flex: 1;
-  text-align: left;
-}
-
-.couponBtnArrow {
-  font-size: 18px;
-  opacity: 0.8;
 }
